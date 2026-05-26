@@ -9,6 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+const http = require('http');
 const querystring = require('querystring');
 
 // Config
@@ -188,6 +189,26 @@ log('INFO', `📍 Database: ${DB_CONFIG.host}:${DB_CONFIG.port}/${DB_CONFIG.data
 log('INFO', `🌍 Environment: ${process.env.NODE_ENV || 'production'}`);
 log('INFO', '─────────────────────────────────────');
 
+// Start HTTP server (required for Fly.io)
+const PORT = process.env.PORT || 3000;
+const server = http.createServer((req, res) => {
+  if (req.url === '/health' || req.url === '/') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ 
+      status: 'ok', 
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString()
+    }));
+  } else {
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Not found' }));
+  }
+});
+
+server.listen(PORT, '0.0.0.0', () => {
+  log('INFO', `✅ HTTP server listening on port ${PORT}`);
+});
+
 // Run first update immediately
 runUpdate();
 
@@ -198,13 +219,19 @@ const intervalId = setInterval(runUpdate, UPDATE_INTERVAL);
 process.on('SIGTERM', () => {
   log('INFO', '⚠️ SIGTERM received - shutting down gracefully...');
   clearInterval(intervalId);
-  process.exit(0);
+  server.close(() => {
+    log('INFO', 'HTTP server closed');
+    process.exit(0);
+  });
 });
 
 process.on('SIGINT', () => {
   log('INFO', '⚠️ SIGINT received - shutting down gracefully...');
   clearInterval(intervalId);
-  process.exit(0);
+  server.close(() => {
+    log('INFO', 'HTTP server closed');
+    process.exit(0);
+  });
 });
 
 // Error handling
