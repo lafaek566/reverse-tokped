@@ -1,0 +1,29 @@
+{
+  "name": "tokopedia-scraper-railway",
+  "version": "1.0.0",
+  "description": "Tokopedia API Scraper with 24/7 auto-updates on Railway",
+  "main": "daemon-monitor.js",
+  "type": "module",
+  "scripts": {
+    "start": "node daemon-monitor.js",
+    "dev": "NODE_ENV=development node daemon-monitor.js",
+    "test": "NODE_ENV=development node tokopedia_scraper_production.js"
+  },
+  "dependencies": {
+    "mysql2": "^3.6.5"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": "20.x",
+    "npm": "10.x"
+  },
+  "keywords": [
+    "tokopedia",
+    "scraper",
+    "api",
+    "ecommerce",
+    "daemon"
+  ],
+  "author": "",
+  "license": "MIT"
+}
