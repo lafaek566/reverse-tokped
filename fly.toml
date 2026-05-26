@@ -4,23 +4,31 @@ primary_region = "sin"
 [build]
   builder = "heroku/buildpacks:20"
 
-[env]
-  NODE_ENV = "production"
-
 [processes]
   web = "node daemon-monitor.js"
 
+[env]
+  NODE_ENV = "production"
+  DB_HOST = ""
+  DB_USER = ""
+  DB_PASS = ""
+  DB_NAME = ""
+
 [[services]]
-  internal_port = 8080
-  protocol = "tcp"
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
   
   [services.concurrency]
     hard_limit = 25
     soft_limit = 20
 
-[env]
-  DB_HOST = ""
-  DB_USER = ""
-  DB_PASS = ""
-  DB_NAME = ""
-  NODE_ENV = "production"
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+  
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
