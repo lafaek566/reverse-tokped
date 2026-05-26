@@ -1,0 +1,26 @@
+app = "tokopedia-scraper"
+primary_region = "sin"
+
+[build]
+  builder = "heroku/buildpacks:20"
+
+[env]
+  NODE_ENV = "production"
+
+[processes]
+  web = "node daemon-monitor.js"
+
+[[services]]
+  internal_port = 8080
+  protocol = "tcp"
+  
+  [services.concurrency]
+    hard_limit = 25
+    soft_limit = 20
+
+[env]
+  DB_HOST = ""
+  DB_USER = ""
+  DB_PASS = ""
+  DB_NAME = ""
+  NODE_ENV = "production"
